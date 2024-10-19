@@ -5,7 +5,7 @@ async function fetchPokemon() {
     try {
         const response = await fetch("http://localhost:3000/pokemon");
         if (!response.ok) {
-            throw new Error("http call failed");
+            throw new Error("HTTP call failed");
         }
         const data = await response.json();
         pokemonData = data;
@@ -16,20 +16,20 @@ async function fetchPokemon() {
     }
 }
 
-// Card component
-function PokemonCard(props) {
+// Card component with Tailwind styling
+function PokemonCard({ name, image, types }) {
     return React.createElement(
         "div",
         {
-            className: "bg-white rounded-lg shadow-2xl p-6 m-4 w-72 transition-transform transform hover:scale-105", // Kartu Pokemon
+            className: "bg-white rounded-lg shadow-lg p-4 m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transition-transform transform hover:scale-105",
         },
-        React.createElement("img", { src: props.image, alt: props.name, className: "mx-auto h-36 w-36" }), // Gambar Pokemon
-        React.createElement("h2", { className: "text-2xl font-bold text-center text-blue-700 mt-3" }, props.name), // Nama Pokemon
-        React.createElement("p", { className: "text-gray-500 text-center text-lg" }, `Type: ${props.types}`) // Tipe Pokemon
+        React.createElement("img", { src: image, alt: name, className: "mx-auto h-36 w-36" }),
+        React.createElement("h2", { className: "text-xl font-bold text-center text-blue-700 mt-3" }, name),
+        React.createElement("p", { className: "text-gray-500 text-center text-lg" }, `Type: ${types}`)
     );
 }
 
-// List component
+// List component to render all Pokemon cards
 function PokemonList() {
     if (pokemonData.length === 0) {
         return React.createElement(
@@ -46,26 +46,24 @@ function PokemonList() {
             React.createElement(PokemonCard, {
                 key: pokemon.id,
                 name: pokemon.name,
-                types: pokemon.types.join("/"),
+                types: pokemon.types ? pokemon.types.join(" / ") : "Unknown",
                 image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
             })
         )
     );
 }
 
-// App component wrap header and list
+// App component to wrap header and list
 function App() {
     return React.createElement(
         "div",
-        { className: "max-w-screen-lg mx-auto p-4" }, // Center the content
+        { className: "max-w-screen-lg mx-auto p-4" },
         React.createElement(
             "header",
-            { className: "bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg shadow-lg" },
-            React.createElement(
-                "h1",
-                { className: "text-4xl text-center font-extrabold" },
-                "Pokedex"
-            )
+            {
+                className: "bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg shadow-lg text-center",
+            },
+            React.createElement("h1", { className: "text-4xl font-extrabold" }, "Pokedex")
         ),
         React.createElement(PokemonList, null)
     );
@@ -76,8 +74,7 @@ function renderApp() {
     ReactDOM.render(React.createElement(App), document.getElementById("root"));
 }
 
-// Initial render
+// Initial render and data fetch
 renderApp();
 
-// Fetch and display the Pokemon data
 fetchPokemon();
