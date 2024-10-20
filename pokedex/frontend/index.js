@@ -17,7 +17,7 @@ async function fetchPokemon() {
 }
 
 // Card component with Tailwind styling
-function PokemonCard({ name, image, types,url }) {
+function PokemonCard({ name, image, types }) {
     return React.createElement(
         "div",
         {
