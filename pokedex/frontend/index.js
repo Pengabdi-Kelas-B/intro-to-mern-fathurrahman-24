@@ -2,7 +2,7 @@
 let pokemonList = [];
 let searchQuery = "";
 
-// Mengambil data Pokémon dari server lokal
+// Fungsi untuk mengambil data Pokémon dari server lokal
 async function loadPokemonData() {
     try {
         const response = await fetch("http://localhost:3000/pokemon");
@@ -15,7 +15,7 @@ async function loadPokemonData() {
     } catch (error) {
         console.error("Gagal mengambil data Pokémon:", error);
         alert("Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.");
-        renderApp();
+        renderApp(); // Render ulang aplikasi untuk memberi tahu pengguna
     }
 }
 
@@ -39,6 +39,7 @@ function getTypeBackground(type) {
         dark: 'bg-gradient-to-r from-gray-700 to-gray-900 text-white',
     };
 
+    // Mengembalikan kelas yang sesuai atau kelas default
     return typeClassMap[type.toLowerCase()] || 'bg-gradient-to-r from-gray-200 to-gray-300';
 }
 
@@ -78,7 +79,7 @@ function SearchBar() {
             ),
             React.createElement(
                 "div",
-                { className: "flex items-center" }, // Flexbox untuk mengatur input dan button
+                { className: "flex items-center" },
                 React.createElement(
                     "input",
                     {
@@ -86,8 +87,8 @@ function SearchBar() {
                         placeholder: "Cari Pokémon...",
                         value: searchQuery,
                         onChange: (e) => {
-                            searchQuery = e.target.value.trim();
-                            renderApp();
+                            searchQuery = e.target.value.trim(); // Ambil query pencarian
+                            renderApp(); // Render ulang aplikasi
                         },
                         className: "w-64 h-12 border rounded-l-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg overflow-hidden"
                     }
@@ -96,7 +97,7 @@ function SearchBar() {
                     "button",
                     {
                         onClick: () => {
-                            // Logika untuk menangani pencarian bisa ditambahkan di sini
+                            // Logika pencarian bisa ditambahkan di sini
                         },
                         className: "bg-blue-500 text-white rounded-r-lg h-12 px-4 flex items-center justify-center hover:bg-blue-600 transition duration-200"
                     },
@@ -145,11 +146,10 @@ function App() {
     );
 }
 
-// Merender aplikasi ke dalam DOM
+// Fungsi untuk merender aplikasi ke dalam DOM
 function renderApp() {
     ReactDOM.render(React.createElement(App), document.getElementById("root"));
 }
 
 // Memulai aplikasi dan mengambil data
-renderApp();
-loadPokemonData();
+loadPokemonData(); // Panggil fungsi untuk memuat data Pokémon
