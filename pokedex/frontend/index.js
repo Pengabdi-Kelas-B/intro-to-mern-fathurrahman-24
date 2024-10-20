@@ -1,69 +1,56 @@
-let pokemonData = [];
+// Data untuk menampung daftar Pokémon dan pencarian pengguna
+let pokemonList = [];
 let searchQuery = "";
 
-// Fetch data from mock server and sort by name
-async function fetchPokemon() {
+// Fungsi untuk mengambil data Pokémon dari server lokal
+async function loadPokemonData() {
     try {
         const response = await fetch("http://localhost:3000/pokemon");
         if (!response.ok) {
-            throw new Error("HTTP call failed");
+            throw new Error(`Error: ${response.statusText}`);
         }
         const data = await response.json();
-        // Sort the Pokemon by name alphabetically
-        pokemonData = data.sort((a, b) => a.name.localeCompare(b.name));
+        // Mengurutkan data Pokémon berdasarkan nama secara alfabetis
+        pokemonList = data.sort((a, b) => a.name.localeCompare(b.name));
         renderApp();
     } catch (error) {
-        console.error("Failed to fetch Pokemon data:", error);
+        console.error("Gagal mengambil data Pokémon:", error);
+        alert("Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.");
         renderApp();
     }
 }
 
-// Function to determine background gradient class for card types
+// Fungsi untuk menentukan kelas background berdasarkan tipe Pokémon
 function getTypeBackground(type) {
-    switch (type.toLowerCase()) {
-        case 'grass':
-            return 'bg-gradient-to-r from-green-200 to-green-400';
-        case 'fire':
-            return 'bg-gradient-to-r from-red-200 to-red-400';
-        case 'water':
-            return 'bg-gradient-to-r from-blue-200 to-blue-400';
-        case 'electric':
-            return 'bg-gradient-to-r from-yellow-200 to-yellow-400';
-        case 'psychic':
-            return 'bg-gradient-to-r from-purple-200 to-purple-400';
-        case 'rock':
-            return 'bg-gradient-to-r from-gray-300 to-gray-500';
-        case 'ground':
-            return 'bg-gradient-to-r from-yellow-300 to-yellow-500';
-        case 'fairy':
-            return 'bg-gradient-to-r from-pink-200 to-pink-400';
-        case 'fighting':
-            return 'bg-gradient-to-r from-red-300 to-red-500';
-        case 'poison':
-            return 'bg-gradient-to-r from-purple-300 to-purple-500';
-        case 'bug':
-            return 'bg-gradient-to-r from-green-300 to-green-500';
-        case 'ghost':
-            return 'bg-gradient-to-r from-indigo-200 to-indigo-400';
-        case 'steel':
-            return 'bg-gradient-to-r from-gray-400 to-gray-600';
-        case 'dragon':
-            return 'bg-gradient-to-r from-indigo-300 to-indigo-500';
-        case 'dark':
-            return 'bg-gradient-to-r from-gray-700 to-gray-900 text-white';
-        default:
-            return 'bg-gradient-to-r from-gray-200 to-gray-300';
-    }
+    const typeClassMap = {
+        grass: 'bg-gradient-to-r from-green-200 to-green-400',
+        fire: 'bg-gradient-to-r from-red-200 to-red-400',
+        water: 'bg-gradient-to-r from-blue-200 to-blue-400',
+        electric: 'bg-gradient-to-r from-yellow-200 to-yellow-400',
+        psychic: 'bg-gradient-to-r from-purple-200 to-purple-400',
+        rock: 'bg-gradient-to-r from-gray-300 to-gray-500',
+        ground: 'bg-gradient-to-r from-yellow-300 to-yellow-500',
+        fairy: 'bg-gradient-to-r from-pink-200 to-pink-400',
+        fighting: 'bg-gradient-to-r from-red-300 to-red-500',
+        poison: 'bg-gradient-to-r from-purple-300 to-purple-500',
+        bug: 'bg-gradient-to-r from-green-300 to-green-500',
+        ghost: 'bg-gradient-to-r from-indigo-200 to-indigo-400',
+        steel: 'bg-gradient-to-r from-gray-400 to-gray-600',
+        dragon: 'bg-gradient-to-r from-indigo-300 to-indigo-500',
+        dark: 'bg-gradient-to-r from-gray-700 to-gray-900 text-white',
+    };
+
+    return typeClassMap[type.toLowerCase()] || 'bg-gradient-to-r from-gray-200 to-gray-300';
 }
 
-// Card component with background color based on Pokémon type
+// Komponen kartu Pokémon yang menampilkan gambar dan tipe
 function PokemonCard({ name, image, types }) {
     const backgroundColor = getTypeBackground(types.split(" / ")[0]);
 
     return React.createElement(
         "div",
         {
-            className: `${backgroundColor} rounded-lg shadow-lg p-4 m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 transition-transform transform hover:scale-105`,
+            className: `${backgroundColor} rounded-lg shadow-lg p-4 m-2 w-full sm:w-1/2 md:w-1/4 transform hover:scale-105`
         },
         React.createElement("img", { src: image, alt: name, className: "mx-auto h-36 w-36 rounded-full border-2 border-white shadow-md" }),
         React.createElement("h2", { className: "text-xl font-bold text-center text-blue-900 mt-3" }, name),
@@ -71,77 +58,75 @@ function PokemonCard({ name, image, types }) {
     );
 }
 
-// Input component for searching Pokémon by name, centered
+// Komponen untuk input pencarian Pokémon
 function SearchBar() {
     return React.createElement(
         "div",
-        { className: "flex justify-center mb-6" },
+        { className: "flex justify-between items-center mb-6" },
+        React.createElement(
+            "h1",
+            { className: "text-4xl font-bold text-center text-white bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-lg" },
+            "Pokedex"
+        ),
         React.createElement(
             "input",
             {
                 type: "text",
-                placeholder: "Search Pokémon...",
+                placeholder: "Cari Pokémon...",
                 value: searchQuery,
                 onChange: (e) => {
-                    searchQuery = e.target.value;
+                    searchQuery = e.target.value.trim();
                     renderApp();
                 },
-                className: "w-full sm:w-1/2 md:w-1/3 p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className: "sm:w-1/3 p-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
             }
         )
     );
 }
 
-// List component to render all Pokemon cards
+// Komponen untuk menampilkan daftar Pokémon berdasarkan pencarian
 function PokemonList() {
-    const filteredPokemon = pokemonData.filter(pokemon =>
+    const visiblePokemon = pokemonList.filter(pokemon =>
         pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    if (filteredPokemon.length === 0) {
+    if (visiblePokemon.length === 0) {
         return React.createElement(
             "p",
             { className: "text-center text-lg font-semibold" },
-            "No Pokémon found."
+            "Tidak ada Pokémon yang ditemukan."
         );
     }
 
     return React.createElement(
         "div",
         { className: "flex flex-wrap justify-center" },
-        filteredPokemon.map((pokemon) =>
+        visiblePokemon.map((pokemon) =>
             React.createElement(PokemonCard, {
                 key: pokemon.id,
                 name: pokemon.name,
                 types: pokemon.types ? pokemon.types.join(" / ") : "Unknown",
-                image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
+                image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`
             })
         )
     );
 }
 
-// App component to wrap header, search bar, and list
+// Komponen utama yang mencakup judul, input pencarian, dan daftar Pokémon
 function App() {
     return React.createElement(
         "div",
         { className: "max-w-screen-lg mx-auto p-4" },
-        React.createElement(
-            "header",
-            {
-                className: "bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg shadow-lg text-center",
-            },
-            React.createElement("h1", { className: "text-4xl font-extrabold" }, "Pokedex")
-        ),
         React.createElement(SearchBar, null),
         React.createElement(PokemonList, null)
     );
 }
 
-// Function to render the app
+// Fungsi untuk merender aplikasi
 function renderApp() {
     ReactDOM.render(React.createElement(App), document.getElementById("root"));
 }
 
-// Initial render and data fetch
+// Memulai aplikasi dengan melakukan render dan mengambil data
 renderApp();
-fetchPokemon();
+loadPokemonData();
