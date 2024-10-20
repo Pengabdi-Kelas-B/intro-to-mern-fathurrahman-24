@@ -1,16 +1,15 @@
-// Data untuk menampung daftar Pokémon dan pencarian pengguna
+// Inisialisasi daftar Pokémon dan query pencarian
 let pokemonList = [];
 let searchQuery = "";
 
-// Fungsi untuk mengambil data Pokémon dari server lokal
+// Mengambil data Pokémon dari server lokal
 async function loadPokemonData() {
     try {
         const response = await fetch("http://localhost:3000/pokemon");
-        if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+        
         const data = await response.json();
-        // Mengurutkan data Pokémon berdasarkan nama secara alfabetis
+        // Mengurutkan data Pokémon berdasarkan nama
         pokemonList = data.sort((a, b) => a.name.localeCompare(b.name));
         renderApp();
     } catch (error) {
@@ -20,7 +19,7 @@ async function loadPokemonData() {
     }
 }
 
-// Fungsi untuk menentukan kelas background berdasarkan tipe Pokémon
+// Mendapatkan kelas latar belakang berdasarkan tipe Pokémon
 function getTypeBackground(type) {
     const typeClassMap = {
         grass: 'bg-gradient-to-r from-green-200 to-green-400',
@@ -43,25 +42,23 @@ function getTypeBackground(type) {
     return typeClassMap[type.toLowerCase()] || 'bg-gradient-to-r from-gray-200 to-gray-300';
 }
 
-// Komponen kartu Pokémon yang menampilkan gambar dan tipe
+// Kartu Pokémon yang menampilkan gambar dan tipe
 function PokemonCard({ name, image, types }) {
     const backgroundColor = getTypeBackground(types.split(" / ")[0]);
 
     return React.createElement(
         "div",
-        {
-            className: `${backgroundColor} rounded-lg shadow-lg p-4 m-2 w-full sm:w-1/2 md:w-1/4 transform hover:scale-105 transition-transform`
-        },
+        { className: `${backgroundColor} rounded-lg shadow-lg p-4 m-2 w-48 transform hover:scale-105 transition-transform` },
         React.createElement("img", {
             src: image,
             alt: name,
-            className: "mx-auto h-36 w-36 rounded-full border-2 border-white shadow-md"
+            className: "mx-auto h-32 w-32 rounded-full border-4 border-white shadow-md"
         }),
         React.createElement("h2", {
-            className: "text-xl font-bold text-center text-blue-900 mt-3"
+            className: "text-lg font-bold text-center text-blue-900 mt-2"
         }, name),
         React.createElement("p", {
-            className: "text-gray-800 text-center text-lg"
+            className: "text-gray-800 text-center text-md"
         }, `Type: ${types}`)
     );
 }
@@ -70,35 +67,53 @@ function PokemonCard({ name, image, types }) {
 function SearchBar() {
     return React.createElement(
         "div",
-        { className: "flex flex-col items-center sm:flex-row sm:justify-between mb-6" },
+        { className: "flex flex-col items-center mb-6" },
         React.createElement(
-            "h1",
-            { className: "text-4xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-lg mb-4 sm:mb-0" },
-            "Pokedex"
-        ),
-        React.createElement(
-            "input",
-            {
-                type: "text",
-                placeholder: "Cari Pokémon...",
-                value: searchQuery,
-                onChange: (e) => {
-                    searchQuery = e.target.value.trim();
-                    renderApp();
-                },
-                className: "w-full sm:w-1/3 p-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-            }
+            "div",
+            { className: "flex justify-between items-center w-full fixed top-0 left-0 right-0 z-10 p-4 bg-gradient-to-r from-blue-600 to-purple-600" },
+            React.createElement(
+                "h1",
+                { className: "text-5xl font-bold text-white" },
+                "Pokedex"
+            ),
+            React.createElement(
+                "div",
+                { className: "flex items-center" }, // Flexbox untuk mengatur input dan button
+                React.createElement(
+                    "input",
+                    {
+                        type: "text",
+                        placeholder: "Cari Pokémon...",
+                        value: searchQuery,
+                        onChange: (e) => {
+                            searchQuery = e.target.value.trim();
+                            renderApp();
+                        },
+                        className: "w-64 h-12 border rounded-l-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg overflow-hidden"
+                    }
+                ),
+                React.createElement(
+                    "button",
+                    {
+                        onClick: () => {
+                            // Logika untuk menangani pencarian bisa ditambahkan di sini
+                        },
+                        className: "bg-blue-500 text-white rounded-r-lg h-12 px-4 flex items-center justify-center hover:bg-blue-600 transition duration-200"
+                    },
+                    "Search"
+                )
+            )
         )
     );
 }
 
 // Komponen untuk menampilkan daftar Pokémon berdasarkan pencarian
 function PokemonList() {
-    const visiblePokemon = pokemonList.filter(pokemon =>
+    const filteredPokemon = pokemonList.filter(pokemon =>
         pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    if (visiblePokemon.length === 0) {
+    if (filteredPokemon.length === 0) {
         return React.createElement(
             "p",
             { className: "text-center text-lg font-semibold" },
@@ -109,7 +124,7 @@ function PokemonList() {
     return React.createElement(
         "div",
         { className: "flex flex-wrap justify-center" },
-        visiblePokemon.map((pokemon) =>
+        filteredPokemon.map(pokemon =>
             React.createElement(PokemonCard, {
                 key: pokemon.id,
                 name: pokemon.name,
@@ -120,21 +135,21 @@ function PokemonList() {
     );
 }
 
-// Komponen utama yang mencakup judul, input pencarian, dan daftar Pokémon
+// Komponen utama aplikasi
 function App() {
     return React.createElement(
         "div",
-        { className: "max-w-screen-lg mx-auto p-4" },
+        { className: "max-w-screen-lg mx-auto p-4 pt-24" },
         React.createElement(SearchBar),
         React.createElement(PokemonList)
     );
 }
 
-// Fungsi untuk merender aplikasi
+// Merender aplikasi ke dalam DOM
 function renderApp() {
     ReactDOM.render(React.createElement(App), document.getElementById("root"));
 }
 
-// Memulai aplikasi dengan melakukan render dan mengambil data
+// Memulai aplikasi dan mengambil data
 renderApp();
 loadPokemonData();
