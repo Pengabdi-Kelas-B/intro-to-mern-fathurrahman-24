@@ -50,11 +50,19 @@ function PokemonCard({ name, image, types }) {
     return React.createElement(
         "div",
         {
-            className: `${backgroundColor} rounded-lg shadow-lg p-4 m-2 w-full sm:w-1/2 md:w-1/4 transform hover:scale-105`
+            className: `${backgroundColor} rounded-lg shadow-lg p-4 m-2 w-full sm:w-1/2 md:w-1/4 transform hover:scale-105 transition-transform`
         },
-        React.createElement("img", { src: image, alt: name, className: "mx-auto h-36 w-36 rounded-full border-2 border-white shadow-md" }),
-        React.createElement("h2", { className: "text-xl font-bold text-center text-blue-900 mt-3" }, name),
-        React.createElement("p", { className: "text-gray-800 text-center text-lg" }, `Type: ${types}`)
+        React.createElement("img", {
+            src: image,
+            alt: name,
+            className: "mx-auto h-36 w-36 rounded-full border-2 border-white shadow-md"
+        }),
+        React.createElement("h2", {
+            className: "text-xl font-bold text-center text-blue-900 mt-3"
+        }, name),
+        React.createElement("p", {
+            className: "text-gray-800 text-center text-lg"
+        }, `Type: ${types}`)
     );
 }
 
@@ -62,10 +70,10 @@ function PokemonCard({ name, image, types }) {
 function SearchBar() {
     return React.createElement(
         "div",
-        { className: "flex justify-between items-center mb-6" },
+        { className: "flex flex-col items-center sm:flex-row sm:justify-between mb-6" },
         React.createElement(
             "h1",
-            { className: "text-4xl font-bold text-center text-white bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-lg" },
+            { className: "text-4xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-lg mb-4 sm:mb-0" },
             "Pokedex"
         ),
         React.createElement(
@@ -78,7 +86,7 @@ function SearchBar() {
                     searchQuery = e.target.value.trim();
                     renderApp();
                 },
-                className: "sm:w-1/3 p-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className: "w-full sm:w-1/3 p-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
             }
         )
     );
@@ -117,8 +125,8 @@ function App() {
     return React.createElement(
         "div",
         { className: "max-w-screen-lg mx-auto p-4" },
-        React.createElement(SearchBar, null),
-        React.createElement(PokemonList, null)
+        React.createElement(SearchBar),
+        React.createElement(PokemonList)
     );
 }
 
